@@ -15,7 +15,12 @@ rankall <- function(outcome, num = "best") {
      rel_data <- na.omit(rel_data)
      rel_ordered <- rel_data[order(rel_data$State, rel_data$Rate, rel_data$Hospital), ]
      
-     # NEED to do an apply / split function here to select the correct hospital rating
+     # Splitting the relevant data by state
+     byState <- split(rel_ordered, rel_ordered$State)
+     
+     # Selecting the relevant hospital in each given state, only returning the hospital and state
+     num <- 20
+     selHosp <- lapply(byState, function(elt) elt[num, 1:2])
      
      # Return a data frame with the hospital names and the
      # (abbreviated) state name
