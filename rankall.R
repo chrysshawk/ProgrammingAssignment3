@@ -13,32 +13,33 @@ rankall <- function(outcome, num = "best") {
      rel_data <- measures[,c(2,7,outcomes[outcome])]
      names(rel_data) <- c("Hospital", "State", "Rate")
      rel_data <- na.omit(rel_data)
-     # ordering by state, best to worst
-     rel_ordered <- rel_data[order(rel_data$State, rel_data$Rate, rel_data$Hospital), ]
+
+     # Selecting the relevant hospital in each given state
+     if (num == "best") {
+       num <- 1
+       # ordering by state, best to worst
+       rel_ordered <- rel_data[order(rel_data$State, rel_data$Rate, rel_data$Hospital), ]
+     } else if (num == "worst") {
+       # Changing ordering criteria (worst appears first in list)
+       rel_ordered <- rel_data[order(rel_data$State, (-rel_data$Rate), rel_data$Hospital),]
+       num <- 1 # this now is the worst, not the best
+       message("this is the worst")
+     } else {
+       num <- num # no transformation
+       # ordering by state, best to worst
+       rel_ordered <- rel_data[order(rel_data$State, rel_data$Rate, rel_data$Hospital), ]
+     }
      
      # Splitting the relevant data by state
      byState <- split(rel_ordered, rel_ordered$State)
      
-     # Selecting the relevant hospital in each given state
-     if (num == "best") {
-       num <- 1
-     } else if (num == "worst") {
-       # Changing ordering criteria (worst appears first in list)
-       rel_ordered <- rel_data[order(rel_data$State, -(rel_data$Rate), rel_data$Hospital),]
-       num <- 1 # this now is the worst, not the best
-     } else {
-       num <- num # no transformation
-     }
-     
+     # Selecting the hospital based on input ranking variable 'num'
      selHosp <- sapply(byState, function(elt) elt[num, 1:2])
-     # selHosp <- lapply(byState, function(elt) elt[num, 1:2])
-     
+
      # Transposing result (colums "Hospital" and "State") into data frame
      outHosp <- as.data.frame(t(selHosp))
      
-     
      # Return a data frame with the hospital names and the
-     # (abbreviated) state name
      return(outHosp)
      
 }
